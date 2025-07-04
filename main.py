@@ -166,6 +166,7 @@ class Order(BaseModel):
 # - Returns a confirmation message and the order data.
 # ------------------------------
 @app.post("/create_order/{user_id}")
+# so the user_id param is required as the path parameter, the order is actually a json body contains the order details.
 async def create_order(user_id: int, order: Order) -> dict:
     # Check if the order_id already exists for this user to prevent duplicates
     if any(existing_order["order_id"] == order.order_id for existing_order in dummy_data_2.get(user_id, [])):
@@ -187,3 +188,63 @@ async def create_order(user_id: int, order: Order) -> dict:
             "order": order.model_dump()
         }
 
+# PUT method example for updating an order with the option of PARTIAL updates.
+
+# ------------------------------
+# Pydantic model: UpdateOrder
+# ------------------------------
+# Why we use this:
+# Allows the client to send ONLY the fields they want to update.
+# All fields are Optional, so the user can update any subset of the order data.
+# FastAPI will parse and validate types if provided (e.g., price must be float if sent).
+# Using BaseModel ensures consistent request validation and auto-generates docs.
+# ------------------------------
+class UpdateOrder(BaseModel):
+    order_id: Optional[int] = None
+    item: Optional[str] = None
+    quantity: Optional[int] = None
+    price: Optional[float] = None
+
+
+# ------------------------------
+# Path Operation Function for PUT: update_order
+# ------------------------------
+# Endpoint: PUT /update_order/{user_id}/{order_id}
+# Purpose:
+# Update an existing order for a specific user.
+# Allows partial updates: the client can send only fields they want to modify.
+# Uses user_id and order_id as path parameters to locate the target order.
+# Returns a success message with updated data or appropriate error messages.
+# ------------------------------
+@app.put("/update_order/{user_id}/{order_id}")
+async def update_order(user_id: int, order_id: int, updated_order: UpdateOrder) -> dict:
+    # Check if user exists
+    if user_id not in dummy_data_2:
+        return {"error": "User not found"}
+
+    # Get the user's order list
+    user_orders = dummy_data_2[user_id]
+    print(user_orders)  # For debugging: shows current orders before updating
+
+    # Search for the order to update within the user's orders
+    for order in user_orders:
+        if order['order_id'] == order_id:
+            # Perform partial updates:
+            # Only update the fields if they are provided in the request body.
+            if updated_order.order_id is not None:
+                order['order_id'] = updated_order.order_id
+            if updated_order.item is not None:
+                order['item'] = updated_order.item
+            if updated_order.quantity is not None:
+                order['quantity'] = updated_order.quantity
+            if updated_order.price is not None:
+                order['price'] = updated_order.price
+
+            # Return confirmation message and updated order data
+            return {
+                "message": f"Order: {order_id} updated successfully for user {user_id}",
+                "updated_order": updated_order.model_dump()
+            }
+
+    # If order_id is not found under the user
+    return {"error": "Order not found"}

@@ -22,9 +22,19 @@ Content-Type: application/json
 
 ### Test an invalid order creation (missing item and wrong data type for quantity)
 POST http://127.0.0.1:8000/create_order/102
+Content-type: application/json
 
 {
     "order_id": 7002,
     "quantity": "two",
     "price": 49.99
+}
+
+### Test on valid user order upadate
+PUT http://127.0.0.1:8000/update_order/102/6001
+Content-Type: application/json
+
+{
+  "item": "SSD Drive",
+  "quantity": 2
 }
