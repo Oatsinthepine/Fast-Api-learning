@@ -8,4 +8,23 @@ Accept: application/json
 GET http://127.0.0.1:8000/hello/User
 Accept: application/json
 
-###
+### Test an valid order creation
+
+POST http://127.0.0.1:8000/create_order/102
+Content-Type: application/json
+
+{
+    "order_id": 7001,
+    "item": "Webcam",
+    "quantity": 1,
+    "price": 89.99
+}
+
+### Test an invalid order creation (missing item and wrong data type for quantity)
+POST http://127.0.0.1:8000/create_order/102
+
+{
+    "order_id": 7002,
+    "quantity": "two",
+    "price": 49.99
+}

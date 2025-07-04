@@ -78,22 +78,25 @@ async def search_item_by_quantity(quantity: Optional[int] = None) -> list[dict] 
 
 # combining path and query parameters together example.
 # Here is a structured, practical FastAPI mini-exercise:
-#
-# ✅ Combining path + query parameters
-# ✅ Using optional and required query parameters
-# ✅ Practicing multiple optional filters together
+
+#  Combining path + query parameters
+#  Using optional and required query parameters
+#  Practicing multiple optional filters together
 
 # Mini Project Scenario: Orders API
-#
+
 # You have:
 # 	•	A user can retrieve their orders by user_id (path parameter).
-# 	•	They can optionally filter:
+# 	They can optionally filter:
 # 	•	By item name (optional query param, str)
 # 	•	By min_price (optional query param, float)
 # 	•	By max_price (optional query param, float)
 # 	•	By quantity (optional query param, int)
 
-# Task
+# ------------------------------
+# In-memory dummy data to simulate a database.
+# Note: This data is not persistent and will reset when the server restarts.
+# ------------------------------
 dummy_data_2 = {
     101: [  # user_id = 101
         {"order_id": 5001, "item": "Mechanical Keyboard", "quantity": 1, "price": 120.5},
@@ -136,4 +139,51 @@ async def get_user_orders(
 
 
 # Request Body and the POST method example.
+# ------------------------------
+# Why we use BaseModel:
+# ------------------------------
+# In FastAPI, we use Pydantic's BaseModel to:
+#  Define the expected structure of incoming JSON data (request body).
+#  Automatically validate data types (e.g., order_id must be int).
+#  Parse incoming data into a Python object we can easily work with.
+#  Auto-generate OpenAPI docs (/docs) with clear schema definitions.
+# This ensures the client sends the correct data format and prevents type errors during processing.
+# ------------------------------
+
+class Order(BaseModel):
+    order_id: int
+    item: str
+    quantity: int
+    price: float
+
+# ------------------------------
+# POST endpoint to create a new order for a user.
+# Path: /create_order/{user_id}
+# Method: POST
+# - Accepts user_id as a path parameter (int).
+# - Accepts an Order JSON payload in the request body, parsed & validated by Pydantic.
+# - Adds the order to the user's order list in dummy_data_2.
+# - Returns a confirmation message and the order data.
+# ------------------------------
+@app.post("/create_order/{user_id}")
+async def create_order(user_id: int, order: Order) -> dict:
+    # Check if the order_id already exists for this user to prevent duplicates
+    if any(existing_order["order_id"] == order.order_id for existing_order in dummy_data_2.get(user_id, [])):
+        return {"error": "Order ID already exists for this user"}
+
+    # If user_id is not found, create a new user entry and add the order
+    if user_id not in dummy_data_2:
+        dummy_data_2[user_id] = []
+        dummy_data_2[user_id].append(order.model_dump())  # .model_dump() converts Pydantic object to a dict
+        return {
+            "message": "User not found, created new user and added order",
+            "order": order.model_dump()
+        }
+    else:
+        # If user exists, append the new order to their order list
+        dummy_data_2[user_id].append(order.model_dump())
+        return {
+            "message": "Order created successfully",
+            "order": order.model_dump()
+        }
 
