@@ -99,7 +99,7 @@ async def search_item_by_quantity(quantity: Optional[int] = None) -> list[dict] 
 # ------------------------------
 dummy_data_2 = {
     101: [  # user_id = 101
-        {"order_id": 5001, "item": "Mechanical Keyboard", "quantity": 1, "price": 120.5},
+        {"order_id": 5001, "item": "SSD", "quantity": 1, "price": 120.5},
         {"order_id": 5002, "item": "Wireless Mouse", "quantity": 2, "price": 45.0},
         {"order_id": 5003, "item": "Laptop Stand", "quantity": 1, "price": 30.0},
         {"order_id": 5004, "item": "Wireless Mouse", "quantity": 1, "price": 50.0}
@@ -247,4 +247,19 @@ async def update_order(user_id: int, order_id: int, updated_order: UpdateOrder) 
             }
 
     # If order_id is not found under the user
+    return {"error": "Order not found"}
+
+
+# DELETE method example for deleting an order from a user.
+# ------------------------------
+# Note that we cannnot directly send the delete request via url like this: http://127.0.0.1:8000/delete_order/101/5002, as this by default send a GET request.
+@app.delete("/delete_order/{user_id}/{order_id}")
+async def delete_order(user_id: int, order_id: int) -> dict:
+    if user_id not in dummy_data_2:
+        return {"error": "User not found"}
+    user_orders = dummy_data_2[user_id]
+    for order in user_orders:
+        if order["order_id"] == order_id:
+            user_orders.remove(order)
+            return {"message": f"{order_id} deleted successfully for user {user_id}, which is {order}"}
     return {"error": "Order not found"}

@@ -38,3 +38,7 @@ Content-Type: application/json
   "item": "SSD Drive",
   "quantity": 2
 }
+
+### Test on delete order
+DELETE http://127.0.0.1:8000/delete_order/101/5001
+Accept: application/json
