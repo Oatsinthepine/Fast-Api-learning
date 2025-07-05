@@ -165,3 +165,8 @@ cython_debug/
 .DS_Store
 
 .venv/
+
+# Local databases files
+database.db
+*.db
+*.sqlite
