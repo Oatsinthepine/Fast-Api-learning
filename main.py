@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Header
 from typing import Optional
 from pydantic import BaseModel
 
@@ -52,6 +52,18 @@ async def say_hello(name: str):
 @app.get("/add/{a}/{b}")
 async def add(a:int, b:float):
     return {"result": a + b}
+
+
+# Header parameters example. Header parameters are used to pass additional information in the HTTP headers.
+@app.get("/get_header")
+async def get_header(accept:str = Header(None), content_type: str = Header(None), user_agent=Header(None),
+                     host:str = Header(None)) -> dict:
+    request_headers = {}
+    request_headers["Accept"] = accept if accept else "No Accept header provided"
+    request_headers["Content-Type"] = content_type if content_type else "No Content-Type header provided"
+    request_headers["User-Agent"] = user_agent if user_agent else "No User-Agent header provided"
+    request_headers["Host"] = host if host else "No Host header provided"
+    return request_headers
 
 
 # This is a path parameter example. Path parameters are part of the URL path itself.
