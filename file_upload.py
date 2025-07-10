@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # Here is the way to change the default file upload limit in FastAPI
 from starlette.formparsers import MultiPartParser
 from pathlib import Path
+from typing import List
 
 MultiPartParser.max_part_size = 1024 * 1024 * 10  # Set to 10 MB, or whatever limit you prefer
 
@@ -58,17 +59,17 @@ async def endpoint2(upload_file: UploadFile) -> None:
             print(chunk)
 
 @app.post("/upload_file")
-async def create_upload_file(file_uploaded: UploadFile) -> dict:
+async def create_upload_file(file_uploads: List[UploadFile]) -> dict:
     """
-
-    :param file_uploaded:
-    :return:
+    This is the api endpoint to receive multiple files from the frontend.
+    :param file_uploads:
+    :return: dict
     """
-    content = await file_uploaded.read()
-    with open(UPLOAD_DIR/file_uploaded.filename, "wb") as f:
-        f.write(content)
-    return {"filename": file_uploaded.filename, "content_type": file_uploaded.content_type}
+    for file_upload in file_uploads:
+        content = await file_upload.read()
+        with open(UPLOAD_DIR/file_upload.filename, "wb") as f:
+            f.write(content)
+
+    return {"filename": [f.filename for f in file_uploads], "content_type": [f.content_type for f in file_uploads]}
 
 
-if __name__ == "__main__":
-    print(UPLOAD_DIR)
