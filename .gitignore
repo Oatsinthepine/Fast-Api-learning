@@ -170,3 +170,5 @@ cython_debug/
 database.db
 *.db
 *.sqlite
+
+*/node_modules
