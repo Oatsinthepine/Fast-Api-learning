@@ -1,10 +1,9 @@
 ### Building and running your application
 
 When you're ready, start your application by running:
-`cd file-upload-app/backend`
 `docker compose up --build`.
 
-Your application will be available at http://localhost:8000.
+Your application will be available at http://localhost:5173.
 
 ### Deploying your application to the cloud
 
@@ -20,7 +19,8 @@ Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharin
 docs for more detail on building and pushing.
 
 ### References
-* [Docker's Python guide](https://docs.docker.com/language/python/)
+* [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
+
 
 ### Image of docker init:
-* ![docker init backend](../docker_init_back.png)
+* ![docker init front](../docker_init_front.png)
