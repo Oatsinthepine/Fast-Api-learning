@@ -1,0 +1,17 @@
+# This is the root-level compose.yaml file for both the frontend and backend services of the file upload application.
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./file-uploads-front
+    ports:
+      - 5173:5173
+
