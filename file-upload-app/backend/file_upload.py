@@ -31,6 +31,11 @@ file upload in FastAPI
 - Best Practices
 """
 
+@app.get("/")
+def index_page() -> dict:
+    return {"Welcome": "You have entered the file-upload backend home page!"}
+
+
 @app.post("/upload")
 async def endpoint(upload_file: UploadFile) -> None:
     """

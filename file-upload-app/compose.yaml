@@ -6,12 +6,22 @@ services:
       context: ./backend
     ports:
       - 8000:8000
+    # The part before : is the path on your host machine (your laptop). the path after : is the path inside the container when image is running
+    # This volumes means any files saved by my fastapi app into /app/uploads inside the container will appear in my real backend/uploads directory on my laptop
+    # this is called a bind mount, it binds a host folder to a container folder
     volumes:
       - ./backend/uploads:/app/uploads
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend
 
   frontend:
     build:
       context: ./file-uploads-front
     ports:
       - 5173:5173
-
+    develop:
+      watch:
+        - action: rebuild
+          path: ./file-uploads-front

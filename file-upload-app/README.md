@@ -62,3 +62,9 @@ docker compose up --build
 ```
 
 This will rebuild the image and start the container.
+
+## `docker compose watch`
+docker compose watch — Hot Reload for Docker Compose
+
+You specify which files/folders to watch for each services in the compose.yaml file to be watched.
+when the specified files/folders changes, docker compose will rebuild the affected images and restart the containers
